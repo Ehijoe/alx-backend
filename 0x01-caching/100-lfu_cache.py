@@ -15,7 +15,7 @@ class LFUCache(BaseCaching):
         """Cache an item."""
         if key is None or item is None:
             return
-        if len(self.cache_queue) < self.MAX_ITEMS:
+        if len(self.cache_queue) < self.MAX_ITEMS or key in self.cache_data:
             self.cache_data[key] = item
             self.record_access(key)
         else:
@@ -33,10 +33,10 @@ class LFUCache(BaseCaching):
 
     def pop_key(self):
         """Pop the least frequently used key."""
-        max_count = max([count for key, count in self.cache_queue])
+        min_count = min([count for key, count in self.cache_queue])
         for key, count in self.cache_queue:
-            if count == max_count:
-                self.cache_queue.remove((key, max_count))
+            if count == min_count:
+                self.cache_queue.remove((key, min_count))
                 return key
 
     def record_access(self, accessed_key):
